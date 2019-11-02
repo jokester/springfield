@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
-import App from './App';
+import './index.css';
 import * as serviceWorker from './serviceWorker';
+import { ShareElemLibPlayground } from './demo/shared-element-demo-lib';
+import { ShareElemPocPlayground } from './demo/shared-element-demo-poc';
 
 function registerHMR() {
   type ModuleHMR = typeof module & {
@@ -18,7 +19,13 @@ function registerHMR() {
 }
 
 function render() {
-  ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
+  ReactDOM.render(
+    <>
+      <ShareElemPocPlayground />
+      <ShareElemLibPlayground />
+    </>,
+    document.getElementById('root') as HTMLElement,
+  );
 }
 
 registerHMR();
