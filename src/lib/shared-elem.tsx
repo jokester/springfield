@@ -72,7 +72,7 @@ export const SharedElement: React.FC<SharedElemProps> = props => {
       setExtraStyle(invertedTransform);
       requestAnimationFrame(() => {
         if (effecting) {
-          setExtraStyle(delegate.createInvertedTransformStyle(props.logicalId, props.instanceId, elem!));
+          setExtraStyle(delegate.createInTransitionStyle(props.logicalId, props.instanceId, elem!));
           const tidyUp = () => {
             if (effecting) {
               setExtraStyle(undefined);

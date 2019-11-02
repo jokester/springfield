@@ -21,7 +21,7 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
   removeSnapshot(logicalId: string, physicalId: string): void {
     return removePositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
   },
-  createInitialStyle(logicalId: string, physicalId: string): React.CSSProperties | undefined {
+  createInitialStyle(logicalId: string, physicalId: string): /* React.CSSProperties */ {} | undefined {
     return { visibility: 'hidden' };
   },
   createInvertedTransformStyle(

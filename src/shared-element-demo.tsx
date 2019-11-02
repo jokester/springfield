@@ -42,17 +42,20 @@ export const ShareElemPlayground2: React.FC = props => {
           <div className={componentClasses.mainContent}>
             <p>page2</p>
             <SharedElement logicalId="user" instanceId="main" isTarget>
-              {(style, ref, takeSnapshot) => (
-                <div
-                  className={componentClasses.userAvatar}
-                  ref={ref}
-                  style={style}
-                  onClick={() => {
-                    // takeSnapshot();
-                    setCurrentTab(1);
-                  }}
-                />
-              )}
+              {(style, ref, takeSnapshot) => {
+                console.log('style', style);
+                return (
+                  <div
+                    className={componentClasses.userAvatar}
+                    ref={ref}
+                    style={style}
+                    onClick={() => {
+                      takeSnapshot();
+                      setCurrentTab(1);
+                    }}
+                  />
+                );
+              }}
             </SharedElement>
           </div>
         </div>
