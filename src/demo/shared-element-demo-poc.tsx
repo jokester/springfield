@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, tailwind } from '../tailwind/components';
-import { SharedElement } from './shared-elem';
+import { SharedElementPOC } from '../poc-shared-elem-transition/shared-elem';
 
 const componentClasses = {
   tabHeader: `flex items-center justify-end p-4 `,
@@ -10,7 +10,7 @@ const componentClasses = {
   userAvatar: 'w-40 h-40 border-solid border inline-block bg-gray-200 mx-4',
 } as const;
 
-export const ShareElemPlayground1: React.FC = props => {
+export const ShareElemPocPlayground: React.FC = props => {
   const [currentTab, setCurrentTab] = useState<1 | 2 | 3>(1);
   return (
     <div>
@@ -22,9 +22,9 @@ export const ShareElemPlayground1: React.FC = props => {
       {currentTab === 1 && (
         <div>
           <div className={componentClasses.tabContent}>
-            <SharedElement logicalId="user" instanceId="tab" isTarget>
+            <SharedElementPOC logicalId="user" instanceId="tab" isTarget>
               {(style, ref) => <div className={componentClasses.userIcon} ref={ref} style={style} />}
-            </SharedElement>
+            </SharedElementPOC>
           </div>
           <div className={componentClasses.mainContent}>
             <p>page1</p>
@@ -36,7 +36,7 @@ export const ShareElemPlayground1: React.FC = props => {
           <div className={componentClasses.tabContent}>{/*<div className={componentClasses.userIcon} />*/}</div>
           <div className={componentClasses.mainContent}>
             <p>page2</p>
-            <SharedElement logicalId="user" instanceId="main" isTarget>
+            <SharedElementPOC logicalId="user" instanceId="main" isTarget>
               {(style, ref, takeSnapshot) => (
                 <div
                   className={componentClasses.userAvatar}
@@ -48,7 +48,7 @@ export const ShareElemPlayground1: React.FC = props => {
                   }}
                 />
               )}
-            </SharedElement>
+            </SharedElementPOC>
           </div>
         </div>
       )}

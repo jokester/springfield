@@ -1,4 +1,3 @@
-
 export type PositionSnapshot = (ClientRect | DOMRect) & {
   timestamp: number;
 };

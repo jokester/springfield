@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useCallback, useContext } from 'react';
-import { SpringFieldContext } from './delegate';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { SpringfieldContext } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
 
 interface SharedElemProps {
@@ -41,7 +41,7 @@ interface SharedElemProps {
 
 export const SharedElement: React.FC<SharedElemProps> = props => {
   const ref = useRef<HTMLElement>(null!);
-  const delegate = useContext(SpringFieldContext) || defaultSpringfieldDelegate;
+  const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
 
   const [extraStyle, setExtraStyle] = useState<undefined | React.CSSProperties>(() => {
     if (/* SSR */ typeof window === 'undefined') {

@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-import { ShareElemPlayground2 } from './shared-element-demo';
-import { ShareElemPlayground1 } from './poc-shared-elem-transition/exp';
+import { ShareElemLibPlayground } from './demo/shared-element-demo-lib';
+import { ShareElemPocPlayground } from './demo/shared-element-demo-poc';
 
 function registerHMR() {
   type ModuleHMR = typeof module & {
@@ -21,8 +21,8 @@ function registerHMR() {
 function render() {
   ReactDOM.render(
     <>
-      <ShareElemPlayground1 />
-      <ShareElemPlayground2 />
+      <ShareElemPocPlayground />
+      <ShareElemLibPlayground />
     </>,
     document.getElementById('root') as HTMLElement,
   );

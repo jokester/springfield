@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { findSnapshot, saveSnapshot } from './snapshots';
-import { computeInvertTransformStyle, createPositionSnapshot, PositionSnapshot } from './positional-transition';
+import { computeInvertTransformStyle, createPositionSnapshot } from './positional-transition';
 
 interface SharedElemProps {
   children(
@@ -27,7 +27,7 @@ const defaultExtraStyle: React.CSSProperties = {
 
 const defaultTransition = 'all 0.3s';
 
-export const SharedElement: React.FC<SharedElemProps> = props => {
+export const SharedElementPOC: React.FC<SharedElemProps> = props => {
   const ref = useRef<HTMLElement>(null!);
   // initial
   const [extraStyle, setExtraStyle] = useState<React.CSSProperties>(defaultExtraStyle);

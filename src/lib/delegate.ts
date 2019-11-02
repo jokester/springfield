@@ -41,4 +41,4 @@ export interface SpringfieldDelegate {
   ): undefined | React.CSSProperties;
 }
 
-export const SpringFieldContext = React.createContext<null | SpringfieldDelegate>(null);
+export const SpringfieldContext = React.createContext<null | SpringfieldDelegate>(null);

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SharedElement } from './lib/shared-elem';
+import { SharedElement } from '../lib/shared-elem';
 
 const componentClasses = {
   button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
@@ -11,7 +11,7 @@ const componentClasses = {
   userAvatar: 'w-40 h-40 border-solid border inline-block bg-gray-200 mx-4',
 } as const;
 
-export const ShareElemPlayground2: React.FC = props => {
+export const ShareElemLibPlayground: React.FC = props => {
   const [currentTab, setCurrentTab] = useState<1 | 2 | 3>(1);
   return (
     <div>
