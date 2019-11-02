@@ -1,5 +1,5 @@
 import React from 'react';
-import './components.scss';
+import './components.css';
 
 export const tailwind = {
   button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
