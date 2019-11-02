@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Button, tailwind } from '../tailwind/components';
-import { SharedElement } from './shared-elem';
+import { SharedElement } from './lib/shared-elem';
 
 const componentClasses = {
+  button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
+  verticalContainer: `flex p-4 justify-around`,
   tabHeader: `flex items-center justify-end p-4 `,
   userIcon: `flex-none inline-block w-24 h-24 border-solid border bg-gray-200`,
   tabContent: `h-64`,
@@ -10,13 +11,17 @@ const componentClasses = {
   userAvatar: 'w-40 h-40 border-solid border inline-block bg-gray-200 mx-4',
 } as const;
 
-export const ShareElemPlayground1: React.FC = props => {
+export const ShareElemPlayground2: React.FC = props => {
   const [currentTab, setCurrentTab] = useState<1 | 2 | 3>(1);
   return (
     <div>
-      <p className={tailwind.verticalContainer}>
-        <Button title="tab1" onClick={() => setCurrentTab(1)} />
-        <Button title="tab2" onClick={() => setCurrentTab(2)} />
+      <p className={componentClasses.verticalContainer}>
+        <button title="tab1" className={componentClasses.button} onClick={() => setCurrentTab(1)}>
+          tab1
+        </button>
+        <button title="tab2" className={componentClasses.button} onClick={() => setCurrentTab(2)}>
+          tab2
+        </button>
       </p>
 
       {currentTab === 1 && (

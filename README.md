@@ -1,6 +1,6 @@
 # springfield
 
-React-managed shared element transition
+A React-managed shared element transition library.
 
 ------
 
