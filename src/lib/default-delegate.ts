@@ -5,7 +5,7 @@ import {
   removePositionalSnapshot,
   takePositionalSnapshot,
 } from './positional/positional-snapshots';
-import { SpringfieldDelegate } from './delegate';
+import { SpringfieldDelegate, TransitionPhase } from './delegate';
 import { computeInvertedPositionalTransition } from './positional/positional-transition';
 
 const globalSnapshotStorage: PositionalSnapshotStorage = new Map();
@@ -21,30 +21,27 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
   removeSnapshot(logicalId: string, physicalId: string): void {
     return removePositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
   },
-  createInitialStyle(logicalId: string, physicalId: string): /* React.CSSProperties */ {} | undefined {
-    return { visibility: 'hidden' };
-  },
-  createInvertedTransformStyle(
+
+  createStyle(
+    phase: TransitionPhase,
     logicalId: string,
     physicalId: string,
-    elem: HTMLElement,
-    transition?: string,
-  ): {} /* React.CSSProperties */ | undefined {
-    const lastSnapshpt = findPositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
-    if (lastSnapshpt) {
-      const current = createPositionSnapshot(elem);
-
-      return computeInvertedPositionalTransition(current, lastSnapshpt);
+    elem: undefined | HTMLElement,
+    transition = 'all 0.3s ease-in',
+  ): undefined | {} {
+    if (phase === TransitionPhase.initialRender) {
+      return { visibility: 'hidden' };
+    } else if (phase === TransitionPhase.beforeTransition && elem) {
+      const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
+      if (lastSnapshot) {
+        const current = createPositionSnapshot(elem);
+        return computeInvertedPositionalTransition(current, lastSnapshot);
+      }
+    } else if (phase === TransitionPhase.duringTransition) {
+      return { transition };
+    } else if (phase === TransitionPhase.afterTransition) {
+      return undefined;
     }
     return undefined;
-  },
-
-  createInTransitionStyle(
-    logicalId: string,
-    physicalId: string,
-    elem: HTMLElement,
-    transition?: string,
-  ): /* React.CSSProperties */ {} | undefined {
-    return { transition: transition || 'all 0.3s ease-in' };
   },
 };
