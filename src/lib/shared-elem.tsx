@@ -1,15 +1,22 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { SpringfieldContext } from './delegate';
+import React, { cloneElement, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { SpringfieldContext, TransitionPhase } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
 
 interface SharedElemProps {
+  /**
+   * @param extraStyle
+   * inline styles to render a DOM element with. Typically contains visibility / transform / transition
+   * @param takeSnapshot
+   * a a callback to take snapshot manually. e.g. in scroll/click event handler
+   * @param removeSnapshot
+   * a a callback to remove snapshot manually.
+   * @param ref If the desired shared element is not return value of children, manually pass to desired element.
+   */
   children(
-    // merge with user's style. DO NOT overwrite visibility / transform / transition
     extraStyle: undefined | React.CSSProperties,
-    // pass to DOM element FIXME: remove
-    ref: React.MutableRefObject<any>,
-    // a callback to take snapshot manually e.g. in scroll/click event handler
     takeSnapshot: () => void,
+    removeSnapshot: () => void,
+    ref: React.MutableRefObject<any>,
   ): React.ReactElement;
 
   /**
@@ -32,14 +39,14 @@ interface SharedElemProps {
   transition?: string;
 
   /**
-   * apply transition to children on
+   * apply transition after children is rendered
    * @default false
    * (all SharedElement-rendered children are source of transitions)
    */
   isTarget?: boolean;
 }
 
-export const SharedElement: React.FC<SharedElemProps> = props => {
+export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId, isTarget, logicalId, transition }) => {
   const ref = useRef<HTMLElement>(null!);
   const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
 
@@ -47,14 +54,18 @@ export const SharedElement: React.FC<SharedElemProps> = props => {
     if (/* SSR */ typeof window === 'undefined') {
       return undefined;
     } else {
-      return delegate.createInitialStyle(props.logicalId, props.instanceId);
+      return delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition);
     }
   });
 
   const takeSnapshot = useCallback(() => {
-    if (ref.current instanceof HTMLElement && props.logicalId && props.instanceId)
-      delegate.takeSnapshot(props.logicalId, props.instanceId, ref.current);
-  }, [props.logicalId, props.instanceId, delegate]);
+    if (ref.current instanceof HTMLElement && logicalId && instanceId)
+      delegate.takeSnapshot(logicalId, instanceId, ref.current);
+  }, [logicalId, instanceId, delegate]);
+
+  const removeSnapshot = useCallback(() => {
+    if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
+  }, [delegate, instanceId, logicalId]);
 
   useEffect(() => {
     takeSnapshot();
@@ -63,19 +74,29 @@ export const SharedElement: React.FC<SharedElemProps> = props => {
     let elem: undefined | HTMLElement;
     let invertedTransform: undefined | React.CSSProperties;
     if (
-      props.isTarget &&
-      props.logicalId &&
-      props.instanceId &&
+      isTarget &&
+      logicalId &&
+      instanceId &&
       (elem = ref.current) instanceof HTMLElement &&
-      (invertedTransform = delegate.createInvertedTransformStyle(props.logicalId, props.instanceId, ref.current))
+      (invertedTransform = delegate.createStyle(
+        TransitionPhase.beforeTransition,
+        logicalId,
+        instanceId,
+        ref.current,
+        transition,
+      ))
     ) {
       setExtraStyle(invertedTransform);
       requestAnimationFrame(() => {
         if (effecting) {
-          setExtraStyle(delegate.createInTransitionStyle(props.logicalId, props.instanceId, elem!));
+          setExtraStyle(
+            delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem!, transition),
+          );
           const tidyUp = () => {
             if (effecting) {
-              setExtraStyle(undefined);
+              setExtraStyle(
+                delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem!, transition),
+              );
             }
             elem!.removeEventListener('transitionend', tidyUp);
           };
@@ -89,7 +110,23 @@ export const SharedElement: React.FC<SharedElemProps> = props => {
     return () => {
       effecting = false;
     };
-  }, [props.isTarget, props.logicalId, props.instanceId, props.transition, takeSnapshot, delegate]);
+  }, [isTarget, logicalId, instanceId, transition, takeSnapshot, delegate]);
 
-  return props.children(extraStyle, ref, takeSnapshot);
+  if (typeof children !== 'function') {
+    /**
+     * when api mismatch: silently do nothing
+     */
+    return children as React.ReactElement;
+  } else if (children.length > 3) {
+    /**
+     * when children (a function) makes use of ref: do not inject own
+     */
+    return children(extraStyle, takeSnapshot, removeSnapshot, ref) as React.ReactElement;
+  } else {
+    /**
+     * assume it renders to a DOM element, and inject our ref
+     */
+    const origElem = children(extraStyle, takeSnapshot, removeSnapshot, undefined!);
+    return cloneElement(origElem, { ref }) as React.ReactElement;
+  }
 };
