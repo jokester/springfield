@@ -14,25 +14,25 @@ const globalSnapshotStorage: PositionalSnapshotStorage = new Map();
  * A global singleton
  */
 export const defaultSpringfieldDelegate: SpringfieldDelegate = {
-  takeSnapshot(logicalId: string, physicalId: string, elem: HTMLElement) {
-    return takePositionalSnapshot(globalSnapshotStorage, logicalId, physicalId, elem);
+  takeSnapshot(logicalId: string, instanceId: string, elem: HTMLElement) {
+    return takePositionalSnapshot(globalSnapshotStorage, logicalId, instanceId, elem);
   },
 
-  removeSnapshot(logicalId: string, physicalId: string): void {
-    return removePositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
+  removeSnapshot(logicalId: string, instanceId: string): void {
+    return removePositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
   },
 
   createStyle(
     phase: TransitionPhase,
     logicalId: string,
-    physicalId: string,
+    instanceId: string,
     elem: undefined | HTMLElement,
     transition = 'all 0.3s ease-in',
   ): undefined | {} {
     if (phase === TransitionPhase.initialRender) {
       return { visibility: 'hidden' };
     } else if (phase === TransitionPhase.beforeTransition && elem) {
-      const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, physicalId);
+      const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
       if (lastSnapshot) {
         const current = createPositionSnapshot(elem);
         return computeInvertedPositionalTransition(current, lastSnapshot);

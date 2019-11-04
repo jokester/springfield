@@ -37,14 +37,14 @@ export enum TransitionPhase {
 }
 
 export interface SpringfieldDelegate {
-  takeSnapshot(logicalId: string, physicalId: string, elem: HTMLElement): void;
-  removeSnapshot(logicalId: string, physicalId: string): void;
+  takeSnapshot(logicalId: string, instanceId: string, elem: HTMLElement): void;
+  removeSnapshot(logicalId: string, instanceId: string): void;
 
   /**
    *
    * @param phase
    * @param logicalId
-   * @param physicalId
+   * @param instanceId
    * @param elem
    * @param transition property specified in {@ref SharedElement}
    * @return inline styles to render DOM element with
@@ -52,7 +52,7 @@ export interface SpringfieldDelegate {
   createStyle(
     phase: TransitionPhase,
     logicalId: string,
-    physicalId: string,
+    instanceId: string,
     elem: undefined | HTMLElement,
     transition?: string,
   ): undefined | /* React.CSSProperties */ {};

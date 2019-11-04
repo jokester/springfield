@@ -18,41 +18,41 @@ export function createPositionSnapshot(elem: HTMLElement): PositionSnapshot {
 
 export declare type PositionalSnapshotStorage = Map<
   /* logicalId */ string,
-  Map</* physicalId */ string, PositionSnapshot>
+  Map</* instanceId */ string, PositionSnapshot>
 >;
 
 export function takePositionalSnapshot(
   storage: PositionalSnapshotStorage,
   logicalId: string,
-  physicalId: string,
+  instanceId: string,
   elem: HTMLElement,
 ) {
   const innerMap = storage.get(logicalId);
   if (innerMap) {
-    innerMap.set(physicalId, createPositionSnapshot(elem));
+    innerMap.set(instanceId, createPositionSnapshot(elem));
   } else {
-    storage.set(logicalId, new Map([[physicalId, createPositionSnapshot(elem)]]));
+    storage.set(logicalId, new Map([[instanceId, createPositionSnapshot(elem)]]));
   }
 }
 
 export function findPositionalSnapshot(
   storage: PositionalSnapshotStorage,
   logicalId: string,
-  physicalId: string,
+  instanceId: string,
 ): null | PositionSnapshot {
   let inner;
   if ((inner = storage.get(logicalId))) {
     for (const [pId, snapshot] of inner.entries()) {
-      if (pId !== physicalId && snapshot) return snapshot;
+      if (pId !== instanceId && snapshot) return snapshot;
     }
   }
   return null;
 }
 
-export function removePositionalSnapshot(storage: PositionalSnapshotStorage, logicalId: string, physicalId: string) {
+export function removePositionalSnapshot(storage: PositionalSnapshotStorage, logicalId: string, instanceId: string) {
   let inner;
   if ((inner = storage.get(logicalId))) {
-    inner.delete(physicalId);
+    inner.delete(instanceId);
     if (!inner.size) {
       storage.delete(logicalId);
     }
