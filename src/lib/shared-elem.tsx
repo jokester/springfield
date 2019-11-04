@@ -1,15 +1,22 @@
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { cloneElement, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { SpringfieldContext, TransitionPhase } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
 
 interface SharedElemProps {
+  /**
+   * @param extraStyle
+   * inline styles to render a DOM element with. Typically contains visibility / transform / transition
+   * @param takeSnapshot
+   * a a callback to take snapshot manually. e.g. in scroll/click event handler
+   * @param removeSnapshot
+   * a a callback to remove snapshot manually.
+   * @param ref If the desired shared element is not return value of children, manually pass to desired element.
+   */
   children(
-    // merge with user's style. DO NOT overwrite visibility / transform / transition
     extraStyle: undefined | React.CSSProperties,
-    // pass to DOM element FIXME: remove
-    ref: React.MutableRefObject<any>,
-    // a callback to take snapshot manually e.g. in scroll/click event handler
     takeSnapshot: () => void,
+    removeSnapshot: () => void,
+    ref: React.MutableRefObject<any>,
   ): React.ReactElement;
 
   /**
@@ -56,6 +63,10 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
       delegate.takeSnapshot(logicalId, instanceId, ref.current);
   }, [logicalId, instanceId, delegate]);
 
+  const removeSnapshot = useCallback(() => {
+    if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
+  }, [delegate, instanceId, logicalId]);
+
   useEffect(() => {
     takeSnapshot();
 
@@ -101,5 +112,21 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
     };
   }, [isTarget, logicalId, instanceId, transition, takeSnapshot, delegate]);
 
-  return children(extraStyle, ref, takeSnapshot);
+  if (typeof children !== 'function') {
+    /**
+     * when api mismatch: silently do nothing
+     */
+    return children as React.ReactElement;
+  } else if (children.length > 3) {
+    /**
+     * when children (a function) makes use of ref: do not inject own
+     */
+    return children(extraStyle, takeSnapshot, removeSnapshot, ref) as React.ReactElement;
+  } else {
+    /**
+     * assume it renders to a DOM element, and inject our ref
+     */
+    const origElem = children(extraStyle, takeSnapshot, removeSnapshot, undefined!);
+    return cloneElement(origElem, { ref }) as React.ReactElement;
+  }
 };

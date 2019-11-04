@@ -28,7 +28,7 @@ export const ShareElemLibPlayground: React.FC = props => {
         <div>
           <div className={componentClasses.tabContent}>
             <SharedElement logicalId="user" instanceId="tab" isTarget>
-              {(style, ref) => <div className={componentClasses.userIcon} ref={ref} style={style} />}
+              {(style, _1, _2, ref) => <div className={componentClasses.userIcon} ref={ref} style={style} />}
             </SharedElement>
           </div>
           <div className={componentClasses.mainContent}>
@@ -42,12 +42,11 @@ export const ShareElemLibPlayground: React.FC = props => {
           <div className={componentClasses.mainContent}>
             <p>page2</p>
             <SharedElement logicalId="user" instanceId="main" isTarget>
-              {(style, ref, takeSnapshot) => {
+              {(style, takeSnapshot) => {
                 console.log('style', style);
                 return (
                   <div
                     className={componentClasses.userAvatar}
-                    ref={ref}
                     style={style}
                     onClick={() => {
                       takeSnapshot();
