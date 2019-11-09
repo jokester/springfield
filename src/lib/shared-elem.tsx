@@ -17,7 +17,7 @@ interface SharedElemProps {
     extraStyle: undefined | React.CSSProperties,
     takeSnapshot: () => void,
     removeSnapshot: () => void,
-    ref: React.MutableRefObject<any>,
+    ref?: React.MutableRefObject<any>,
   ): React.ReactElement;
 
   /**
@@ -128,7 +128,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
     /**
      * assume it renders to a DOM element, and inject our ref
      */
-    const origElem = children(extraStyle, takeSnapshot, removeSnapshot, undefined!);
+    const origElem = children(extraStyle, takeSnapshot, removeSnapshot);
     return cloneElement(origElem, { ref }) as React.ReactElement;
   }
 };
