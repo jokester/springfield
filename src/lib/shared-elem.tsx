@@ -64,7 +64,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
 
   const removeSnapshot = useCallback(() => {
     if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
-  }, [delegate, instanceId, logicalId]);
+  }, [instanceId, logicalId, delegate]);
 
   useLayoutEffect(() => {
     takeSnapshot();
