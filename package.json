@@ -58,5 +58,8 @@
     "source-map-explorer": "^2.1.0",
     "ts-jest": "^24",
     "typescript": "^3.6.4"
+  },
+  "resolutions": {
+    "eslint-config-react-app": "*"
   }
 }
