@@ -1,4 +1,4 @@
-import React, { cloneElement, createElement, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { cloneElement, useCallback, useContext, useLayoutEffect, useRef, useState } from 'react';
 import { SpringfieldContext, TransitionPhase } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
 
@@ -66,7 +66,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
     if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
   }, [delegate, instanceId, logicalId]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     takeSnapshot();
 
     let effecting = true;
