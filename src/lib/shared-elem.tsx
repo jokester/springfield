@@ -8,9 +8,11 @@ interface SharedElemProps {
    * inline styles to render a DOM element with. Typically contains opacity / transform / transition
    *
    * @param takeSnapshot
-   * a a callback to take snapshot manually. e.g. in scroll/click event handler
+   * a callback to take snapshot manually. e.g. in scroll/click event handler
+   *
    * @param removeSnapshot
-   * a a callback to remove snapshot manually.
+   * a callback to remove snapshot manually. e.g. when the element is no longer appropriate a transition source
+   *
    * @param ref If the desired shared element is not return value of children, manually pass to desired element.
    */
   children(
