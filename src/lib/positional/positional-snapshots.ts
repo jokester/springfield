@@ -26,12 +26,15 @@ export function takePositionalSnapshot(
   logicalId: string,
   instanceId: string,
   elem: HTMLElement,
-) {
+): void {
+  const x = createPositionSnapshot(elem);
+  if (!(x.width && x.height)) return;
+
   const innerMap = storage.get(logicalId);
   if (innerMap) {
-    innerMap.set(instanceId, createPositionSnapshot(elem));
+    innerMap.set(instanceId, x);
   } else {
-    storage.set(logicalId, new Map([[instanceId, createPositionSnapshot(elem)]]));
+    storage.set(logicalId, new Map([[instanceId, x]]));
   }
 }
 
@@ -49,7 +52,11 @@ export function findPositionalSnapshot(
   return null;
 }
 
-export function removePositionalSnapshot(storage: PositionalSnapshotStorage, logicalId: string, instanceId: string) {
+export function removePositionalSnapshot(
+  storage: PositionalSnapshotStorage,
+  logicalId: string,
+  instanceId: string,
+): void {
   let inner;
   if ((inner = storage.get(logicalId))) {
     inner.delete(instanceId);
