@@ -67,43 +67,46 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
   }, [instanceId, logicalId, delegate]);
 
   useLayoutEffect(() => {
+    const elem = ref.current;
+    if (!(elem instanceof HTMLElement)) return;
+
     takeSnapshot();
 
     let effecting = true;
-    let elem: undefined | HTMLElement;
-    let invertedTransform: undefined | React.CSSProperties;
-    if (
-      isTarget &&
-      logicalId &&
-      instanceId &&
-      (elem = ref.current) instanceof HTMLElement &&
-      (invertedTransform = delegate.createStyle(
+
+    if (isTarget && logicalId && instanceId && extraStyle /* the value for initialRender */) {
+      const invertedTransform = delegate.createStyle(
         TransitionPhase.beforeTransition,
         logicalId,
         instanceId,
         ref.current,
         transition,
-      ))
-    ) {
-      setExtraStyle(invertedTransform);
+      );
+
+      setExtraStyle(invertedTransform || undefined);
+      // do not start transition if invertedTransform is falsy (and we just unset the styles)
+      if (!invertedTransform) return;
+
+      /**
+       * requestAnimationFrame does not really ensure `invertedTransform` style is set to DOM
+       * If this becomes a problem, consider https://www.robinwieruch.de/react-usestate-callback
+       */
       requestAnimationFrame(() => {
-        if (effecting) {
-          setExtraStyle(
-            delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem!, transition),
-          );
-          const tidyUp = () => {
-            if (effecting) {
-              setExtraStyle(
-                delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem!, transition),
-              );
-            }
-            elem!.removeEventListener('transitionend', tidyUp);
-          };
-          elem!.addEventListener('transitionend', tidyUp);
-        }
+        if (!(effecting && ref.current === elem)) return;
+
+        // force invertedTransform to be layouted
+        elem.getBoundingClientRect();
+
+        setExtraStyle(delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition));
+
+        const tidyUp = () => {
+          elem.removeEventListener('transitionend', tidyUp);
+          if (!(effecting && ref.current === elem)) return;
+
+          setExtraStyle(delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition));
+        };
+        elem.addEventListener('transitionend', tidyUp);
       });
-    } else {
-      setExtraStyle({});
     }
 
     return () => {
