@@ -27,8 +27,11 @@ export const ShareElemLibPlayground: React.FC = props => {
       {currentTab === 1 && (
         <div>
           <div className={componentClasses.tabContent}>
-            <SharedElement logicalId="user" instanceId="tab" isTarget>
-              {(style, _1, _2, ref) => <div className={componentClasses.userIcon} ref={ref} style={style} />}
+            <SharedElement logicalId="user" instanceId="tab" isTarget transition="all 2s linear">
+              {(style, _1, _2, ref) => {
+                console.log('user/tab', style);
+                return <div className={componentClasses.userIcon} ref={ref} style={style} />;
+              }}
             </SharedElement>
           </div>
           <div className={componentClasses.mainContent}>
@@ -43,7 +46,7 @@ export const ShareElemLibPlayground: React.FC = props => {
             <p>page2</p>
             <SharedElement logicalId="user" instanceId="main" isTarget>
               {(style, takeSnapshot) => {
-                console.log('style', style);
+                console.log('user/main', style);
                 return (
                   <div
                     className={componentClasses.userAvatar}

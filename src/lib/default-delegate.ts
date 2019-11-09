@@ -29,8 +29,10 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
     elem: undefined | HTMLElement,
     transition = 'all 0.3s ease-in',
   ): undefined | {} {
-    if (phase === TransitionPhase.initialRender) {
-      return { visibility: 'hidden' };
+    if (/* SSR */ typeof window === 'undefined') {
+      return undefined;
+    } else if (phase === TransitionPhase.initialRender) {
+      return { opacity: 0 };
     } else if (phase === TransitionPhase.beforeTransition && elem) {
       const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
       if (lastSnapshot) {

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ShareElemLibPlayground } from './demo/shared-element-demo-lib';
-import { ShareElemPocPlayground } from './demo/shared-element-demo-poc';
 
 function registerHMR() {
   type ModuleHMR = typeof module & {
@@ -19,7 +18,6 @@ function registerHMR() {
 function render() {
   ReactDOM.render(
     <>
-      <ShareElemPocPlayground />
       <ShareElemLibPlayground />
     </>,
     document.getElementById('root') as HTMLElement,
