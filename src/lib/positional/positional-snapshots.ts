@@ -4,15 +4,15 @@ export type PositionSnapshot = (ClientRect | DOMRect) & {
 
 export function createPositionSnapshot(elem: HTMLElement): PositionSnapshot {
   const timestamp = Date.now();
-  const { left, right, top, bottom, width, height } = elem.getBoundingClientRect();
+  const { left, right, top, bottom } = elem.getBoundingClientRect();
   return {
     timestamp,
     left,
     right,
     top,
     bottom,
-    width,
-    height,
+    width: right - left,
+    height: bottom - top,
   };
 }
 
