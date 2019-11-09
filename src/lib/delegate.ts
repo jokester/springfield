@@ -12,7 +12,7 @@ import * as React from 'react';
 export enum TransitionPhase {
   /**
    * the styles to render a DOM element and measure its "stable" state
-   * e.g. {@code { visibility: 'hidden }}
+   * e.g. {@code { opacity: 0 }}
    */
   initialRender = 0,
 

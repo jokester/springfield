@@ -32,7 +32,7 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
     if (/* SSR */ typeof window === 'undefined') {
       return undefined;
     } else if (phase === TransitionPhase.initialRender) {
-      return { visibility: 'hidden' };
+      return { opacity: 0 };
     } else if (phase === TransitionPhase.beforeTransition && elem) {
       const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
       if (lastSnapshot) {

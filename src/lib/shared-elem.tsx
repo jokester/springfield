@@ -5,7 +5,8 @@ import { defaultSpringfieldDelegate } from './default-delegate';
 interface SharedElemProps {
   /**
    * @param extraStyle
-   * inline styles to render a DOM element with. Typically contains visibility / transform / transition
+   * inline styles to render a DOM element with. Typically contains opacity / transform / transition
+   *
    * @param takeSnapshot
    * a a callback to take snapshot manually. e.g. in scroll/click event handler
    * @param removeSnapshot
