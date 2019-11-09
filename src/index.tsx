@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import * as serviceWorker from './serviceWorker';
 import { ShareElemLibPlayground } from './demo/shared-element-demo-lib';
 import { ShareElemPocPlayground } from './demo/shared-element-demo-poc';
 
@@ -30,8 +28,3 @@ function render() {
 
 registerHMR();
 render();
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
