@@ -60,6 +60,7 @@
     "typescript": "^3.6.4"
   },
   "resolutions": {
-    "eslint-config-react-app": "*"
+    "eslint-config-react-app": "*",
+    "eslint": "6.5"
   }
 }
