@@ -50,13 +50,11 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
   const ref = useRef<HTMLElement>(null!);
   const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
 
-  const [extraStyle, setExtraStyle] = useState<undefined | React.CSSProperties>(() => {
-    if (/* SSR */ typeof window === 'undefined') {
-      return undefined;
-    } else {
-      return delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition);
-    }
-  });
+  const [extraStyle, setExtraStyle] = useState<undefined | React.CSSProperties>(() =>
+    isTarget
+      ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
+      : undefined,
+  );
 
   const takeSnapshot = useCallback(() => {
     if (ref.current instanceof HTMLElement && logicalId && instanceId)
