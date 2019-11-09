@@ -114,7 +114,8 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
     return () => {
       effecting = false;
     };
-  }, [isTarget, logicalId, instanceId, transition, takeSnapshot, delegate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isTarget, logicalId, instanceId, transition, takeSnapshot, delegate /* NO extraStyle */]);
 
   if (typeof children !== 'function') {
     /**
