@@ -96,9 +96,9 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
   useLayoutEffect(() => {
     let effecting = true;
     const elem = ref.current;
+    callbacks.takeSnapshot();
 
     if (isTarget && logicalId && instanceId && initialChildProps.styles && elem instanceof HTMLElement) {
-      callbacks.takeSnapshot();
       const invertedTransform = delegate.createStyle(
         TransitionPhase.beforeTransition,
         logicalId,
