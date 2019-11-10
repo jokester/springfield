@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/jokester/springfield#readme",
   "scripts": {
-    "build": "react-scripts build",
+    "build": "rm -rf lib* && tsc --project tsconfig.cjs.json",
     "build:demo": "rm -rf docs/demo && webpack --production && git add -f docs/demo",
     "dev": "webpack --watch",
     "test": "jest",
@@ -29,6 +29,13 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
+  "index": "lib/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
   "peerDependicies": {
     "react": ">=16.8"
   },
