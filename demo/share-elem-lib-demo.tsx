@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SharedElement } from '../src/lib/shared-elem';
+import { SharedElement } from '../src/shared-elem';
 
 const styles = {
   button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
