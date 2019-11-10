@@ -8,7 +8,7 @@ springfield is a library to create shared element transition in React.js.
 
 ## Demo
 
-[demo](https://jokester.github.io/springfield/demo) / [src](/src/demo/shared-element-demo-lib.tsx)
+[demo](https://jokester.github.io/springfield/demo) / [src](https://github.com/jokester/springfield/blob/master/src/demo/shared-element-demo-lib.tsx)
 
 <!-- TODO: link to storyboard -->
 
