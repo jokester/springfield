@@ -1,9 +1,12 @@
 module.exports = ({ config, mode }) => {
   config.module.rules.push({
     test: /\.(ts|tsx)$/,
-    loader: require.resolve('babel-loader'),
+    loader: require.resolve('ts-loader'),
     options: {
-      presets: [['react-app', { flow: false, typescript: true }]],
+      transpileOnly: false,
+      compilerOptions: {
+        jsx: 'react',
+      },
     },
   });
   config.resolve.extensions.push('.ts', '.tsx');

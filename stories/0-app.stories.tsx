@@ -1,6 +1,6 @@
 import React from 'react';
 import { linkTo } from '@storybook/addon-links';
-import { ShareElemLibPlayground } from '../src/demo/shared-element-demo-lib';
+import { ShareElemLibPlayground } from '../demo/share-elem-lib-demo';
 import './external.css';
 
 export default {

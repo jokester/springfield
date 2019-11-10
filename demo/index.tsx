@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ShareElemLibPlayground } from './demo/shared-element-demo-lib';
+import { ShareElemLibPlayground } from './share-elem-lib-demo';
 
 function registerHMR() {
   type ModuleHMR = typeof module & {
