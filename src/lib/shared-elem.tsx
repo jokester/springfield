@@ -1,26 +1,36 @@
-import React, { cloneElement, useCallback, useContext, useLayoutEffect, useRef, useState } from 'react';
+import React, { cloneElement, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { SpringfieldContext, TransitionPhase } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
 
-interface SharedElemProps {
+interface SharedElementCallback {
+  takeSnapshot: () => void;
+  removeSnapshot: () => void;
+}
+
+interface RenderPropsChildren {
   /**
    * @param extraStyle
    * inline styles to render a DOM element with. Typically contains opacity / transform / transition
    *
-   * @param takeSnapshot
-   * a callback to take snapshot manually. e.g. in scroll/click event handler
+   * @param transitionPhase
    *
-   * @param removeSnapshot
-   * a callback to remove snapshot manually. e.g. when the element is no longer appropriate a transition source
+   * @param callbacks
+   * takeSnapshot: a callback to take snapshot manually. e.g. in scroll/click event handler
+   * removeSnapshot: a callback to remove snapshot manually. e.g. when the element is no longer appropriate a transition source
    *
-   * @param ref If the desired shared element is not return value of children, manually pass to desired element.
+   * @param ref
+   * If the desired shared element is not return value of children, manually pass to desired element.
    */
-  children(
+  (
     extraStyle: undefined | React.CSSProperties,
-    takeSnapshot: () => void,
-    removeSnapshot: () => void,
+    transitionPhase: TransitionPhase,
+    callbacks: SharedElementCallback,
     ref?: React.MutableRefObject<any>,
   ): React.ReactElement;
+}
+
+interface SharedElemProps {
+  children: React.ReactElement | RenderPropsChildren;
 
   /**
    * identifier of a logical element
@@ -42,50 +52,62 @@ interface SharedElemProps {
   transition?: string;
 
   /**
-   * apply transition after children is rendered
+   * whether child can be target of shared-element transition
    * @default false
    * (all SharedElement-rendered children are source of transitions)
    */
   isTarget?: boolean;
 }
 
+interface ChildProps {
+  phase: TransitionPhase;
+  styles?: React.CSSProperties;
+}
+
 export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId, isTarget, logicalId, transition }) => {
   const ref = useRef<HTMLElement>(null!);
   const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
 
-  const [extraStyle, setExtraStyle] = useState<undefined | React.CSSProperties>(() =>
-    isTarget
-      ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
-      : undefined,
+  const initialChildProps = useMemo<ChildProps>(
+    () => ({
+      phase: TransitionPhase.initialRender,
+      styles: isTarget
+        ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
+        : undefined,
+    }),
+    [logicalId, instanceId, isTarget, delegate, transition],
   );
 
-  const takeSnapshot = useCallback(() => {
-    if (ref.current instanceof HTMLElement && logicalId && instanceId)
-      delegate.takeSnapshot(logicalId, instanceId, ref.current);
-  }, [logicalId, instanceId, delegate]);
+  const [childProps, setChildProps] = useState<null | ChildProps>(null);
 
-  const removeSnapshot = useCallback(() => {
-    if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
-  }, [instanceId, logicalId, delegate]);
+  const callbacks: SharedElementCallback = useMemo(
+    () => ({
+      takeSnapshot() {
+        if (ref.current instanceof HTMLElement && logicalId && instanceId)
+          delegate.takeSnapshot(logicalId, instanceId, ref.current);
+      },
+      removeSnapshot() {
+        if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
+      },
+    }),
+    [logicalId, instanceId, delegate],
+  );
 
   useLayoutEffect(() => {
-    const elem = ref.current;
-    if (!(elem instanceof HTMLElement)) return;
-
-    takeSnapshot();
-
     let effecting = true;
+    const elem = ref.current;
 
-    if (isTarget && logicalId && instanceId && extraStyle /* the value for initialRender */) {
+    if (isTarget && logicalId && instanceId && initialChildProps.styles && elem instanceof HTMLElement) {
+      callbacks.takeSnapshot();
       const invertedTransform = delegate.createStyle(
         TransitionPhase.beforeTransition,
         logicalId,
         instanceId,
-        ref.current,
+        elem,
         transition,
       );
 
-      setExtraStyle(invertedTransform || undefined);
+      setChildProps({ phase: TransitionPhase.beforeTransition, styles: invertedTransform || undefined });
       // do not start transition if invertedTransform is falsy (and we just unset the styles)
       if (!invertedTransform) return;
 
@@ -94,44 +116,63 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
        * If this becomes a problem, consider https://www.robinwieruch.de/react-usestate-callback
        */
       requestAnimationFrame(() => {
-        if (!(effecting && ref.current === elem)) return;
+        if (!(effecting && ref.current === elem)) return /* due to out of control */;
 
         // force invertedTransform to be layouted
         elem.getBoundingClientRect();
 
-        setExtraStyle(delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition));
+        setChildProps({
+          phase: TransitionPhase.duringTransition,
+          styles: delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition),
+        });
 
         const tidyUp = () => {
           elem.removeEventListener('transitionend', tidyUp);
-          if (!(effecting && ref.current === elem)) return;
+          if (!(effecting && ref.current === elem)) return /* due to out of control */;
 
-          setExtraStyle(delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition));
+          setChildProps({
+            phase: TransitionPhase.afterTransition,
+            styles: delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition),
+          });
         };
+
         elem.addEventListener('transitionend', tidyUp);
       });
+    } else {
+      setChildProps(null);
     }
 
     return () => {
+      // TODO: should remove snapshot
       effecting = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isTarget, logicalId, instanceId, transition, takeSnapshot, delegate /* NO extraStyle */]);
+  }, [logicalId, instanceId, isTarget, transition, delegate /* NO callbacks / initialChildProps */]);
 
-  if (typeof children !== 'function') {
+  const effectiveChildProps = childProps || initialChildProps;
+
+  if (typeof children === 'function' && children.length > 3) {
     /**
-     * when api mismatch: silently do nothing
+     * when children is a function with arity >= 4:
+     * it's a render function that handles ref by itself
      */
-    return children as React.ReactElement;
-  } else if (children.length > 3) {
-    /**
-     * when children (a function) makes use of ref: do not inject own
-     */
-    return children(extraStyle, takeSnapshot, removeSnapshot, ref) as React.ReactElement;
-  } else {
-    /**
-     * assume it renders to a DOM element, and inject our ref
-     */
-    const origElem = children(extraStyle, takeSnapshot, removeSnapshot);
-    return cloneElement(origElem, { ref }) as React.ReactElement;
+    return children(effectiveChildProps.styles, effectiveChildProps.phase, callbacks, ref) as React.ReactElement;
   }
+
+  if (typeof children === 'function') {
+    /**
+     * when children is a function with arity <= 3:
+     * assume it returns a React (DOM) Element, and inject our ref
+     */
+    const origElem = children(effectiveChildProps.styles, effectiveChildProps.phase, callbacks);
+    return origElem && cloneElement(origElem, { ref });
+  }
+
+  if (children && typeof (children as React.ReactElement).type === 'string') {
+    return cloneElement(children as React.ReactElement, {
+      ref,
+      style: effectiveChildProps.styles,
+    }) as React.ReactElement;
+  }
+
+  return children as React.ReactElement;
 };
