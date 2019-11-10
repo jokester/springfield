@@ -17,7 +17,7 @@
   "homepage": "https://github.com/jokester/springfield#readme",
   "scripts": {
     "build": "rm -rf lib* && tsc --project tsconfig.cjs.json",
-    "build:demo": "rm -rf docs/demo && webpack --production && git add -f docs/demo",
+    "build:demo": "rm -rf docs/demo && webpack --mode production && git add -f docs/demo",
     "dev": "webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch",
