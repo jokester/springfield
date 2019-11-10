@@ -16,10 +16,9 @@
   },
   "homepage": "https://jokester.github.io/springfield/demo",
   "scripts": {
-    "start": "react-scripts start",
     "build": "react-scripts build",
-    "analyze": "react-scripts build && source-map-explorer 'build/static/js/*.js'",
-    "dev": "webpack --watch",
+    "build:demo": "webpack --production",
+    "demo": "webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --TODO",
