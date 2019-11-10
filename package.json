@@ -14,7 +14,7 @@
   "bugs": {
     "url": "https://github.com/jokester/springfield/issues"
   },
-  "homepage": "https://github.com/jokester/springfield#readme",
+  "homepage": "https://jokester.github.io/springfield/demo",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
