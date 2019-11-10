@@ -16,7 +16,7 @@ export enum TransitionPhase {
    * @note returning `undefined` would apply no transition.
    * @note implementations should return undefined in SSR
    */
-  initialRender = 0,
+  initialRender = 'initialRender',
 
   /**
    * the styles to apply before transition starts
@@ -24,19 +24,19 @@ export enum TransitionPhase {
    * the last snapshot of the logical element ("first")
    * @note returning `undefined` would apply no transition
    */
-  beforeTransition = 1,
+  beforeTransition = 'beforeTransition',
 
   /**
    * the styles that starts (and exists during) transition
    * e.g. no transform (to undo transform done by `beforeTransition`) and CSS `transition` property.
    */
-  duringTransition = 2,
+  duringTransition = 'duringTransition',
 
   /**
    * the styles to apply after transition ends
    * e.g. empty (so that the element gets rendered normally)
    */
-  afterTransition = 3,
+  afterTransition = 'afterTransition',
 }
 
 export interface SpringfieldDelegate {
