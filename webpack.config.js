@@ -29,6 +29,7 @@ module.exports = {
             transpileOnly: false,
             compilerOptions: {
               jsx: 'react',
+              noEmit: false,
             },
           },
         },
