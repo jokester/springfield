@@ -51,7 +51,7 @@ export const ShareElemLibPlayground: React.FC = props => {
           instanceId="main"
           isTarget
         >
-          {(style, phase, callbacks, ref) => (
+          {(style, callbacks, phase, ref) => (
             <div
               className={styles.mainContent}
               style={style}

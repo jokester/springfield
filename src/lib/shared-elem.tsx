@@ -23,8 +23,8 @@ interface RenderPropsChildren {
    */
   (
     extraStyle: undefined | React.CSSProperties,
-    transitionPhase: TransitionPhase,
     callbacks: SharedElementCallback,
+    transitionPhase: TransitionPhase,
     ref?: React.MutableRefObject<any>,
   ): React.ReactElement;
 }
@@ -155,7 +155,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
      * when children is a function with arity >= 4:
      * it's a render function that handles ref by itself
      */
-    return children(effectiveChildProps.styles, effectiveChildProps.phase, callbacks, ref) as React.ReactElement;
+    return children(effectiveChildProps.styles, callbacks, effectiveChildProps.phase, ref) as React.ReactElement;
   }
 
   if (typeof children === 'function') {
@@ -163,7 +163,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
      * when children is a function with arity <= 3:
      * assume it returns a React (DOM) Element, and inject our ref
      */
-    const origElem = children(effectiveChildProps.styles, effectiveChildProps.phase, callbacks);
+    const origElem = children(effectiveChildProps.styles, callbacks, effectiveChildProps.phase);
     return origElem && cloneElement(origElem, { ref });
   }
 
