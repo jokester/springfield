@@ -6,6 +6,7 @@ module.exports = ({ config, mode }) => {
       transpileOnly: false,
       compilerOptions: {
         jsx: 'react',
+        noEmit: false,
       },
     },
   });

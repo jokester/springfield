@@ -1,6 +1,6 @@
 {
   "name": "springfield",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Wang Guan <momocraft@gmail.com>",
   "private": false,
   "license": "MIT",
@@ -14,10 +14,10 @@
   "bugs": {
     "url": "https://github.com/jokester/springfield/issues"
   },
-  "homepage": "https://jokester.github.io/springfield/demo",
+  "homepage": "https://github.com/jokester/springfield#readme",
   "scripts": {
-    "build": "react-scripts build",
-    "build:demo": "rm -rf docs/demo && webpack --production && git add -f docs/demo",
+    "build": "rm -rf lib* && tsc --project tsconfig.cjs.json",
+    "build:demo": "rm -rf docs/demo && webpack --mode production && git add -f docs/demo",
     "dev": "webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -29,6 +29,13 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
+  "index": "lib/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
   "peerDependicies": {
     "react": ">=16.8"
   },

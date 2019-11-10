@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "declaration": true,
+    "noEmit": false,
+    "target": "es6",
+    "module": "commonjs",
+    "jsx": "react",
+    "sourceRoot": "src",
+    "outDir": "lib"
+  }
+}
