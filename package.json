@@ -17,8 +17,8 @@
   "homepage": "https://jokester.github.io/springfield/demo",
   "scripts": {
     "build": "react-scripts build",
-    "build:demo": "webpack --production",
-    "demo": "webpack --watch",
+    "build:demo": "rm -rf docs/demo && webpack --production && git add -f docs/demo",
+    "dev": "webpack --watch",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --TODO",
