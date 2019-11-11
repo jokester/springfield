@@ -11,29 +11,29 @@ import * as React from 'react';
  */
 export enum TransitionPhase {
   /**
-   * the styles to render a DOM element and measure its "stable" state
+   * the phase to render a DOM element and measure its "stable" position
    * e.g. {@code { opacity: 0 }}
-   * @note returning `undefined` would apply no transition.
-   * @note implementations should return undefined in SSR
+   * @note returning style of `undefined` for this phase would apply no transition.
+   * @note implementations *should* return undefined in SSR
    */
   initialRender = 'initialRender',
 
   /**
-   * the styles to apply before transition starts
-   * e.g. "inverted" transform styles that transforms the position measured at `initialRender` to
+   * the phase to apply transform-like style before transition starts
+   * e.g. "inverted" transform style that transforms the position measured at `initialRender` to
    * the last snapshot of the logical element ("first")
    * @note returning `undefined` would apply no transition
    */
   beforeTransition = 'beforeTransition',
 
   /**
-   * the styles that starts (and exists during) transition
+   * the phase to apply in-transition style to progress
    * e.g. no transform (to undo transform done by `beforeTransition`) and CSS `transition` property.
    */
   duringTransition = 'duringTransition',
 
   /**
-   * the styles to apply after transition ends
+   * the phase after transition ends
    * e.g. empty (so that the element gets rendered normally)
    */
   afterTransition = 'afterTransition',
@@ -50,7 +50,7 @@ export interface SpringfieldDelegate {
    * @param instanceId
    * @param elem
    * @param transition property specified in {@ref SharedElement}
-   * @return inline styles to render DOM element with
+   * @return inline style to render DOM element with
    */
   createStyle(
     phase: TransitionPhase,

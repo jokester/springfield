@@ -7,7 +7,7 @@ function centerOf(pos: PositionSnapshot) {
 /**
  * @param last
  * @param first
- * @returns inline styles that make 'last' appear at position of 'first'
+ * @returns inline style that make 'last' appear at position of 'first'
  */
 export function computeInvertedPositionalTransition(
   last: PositionSnapshot,

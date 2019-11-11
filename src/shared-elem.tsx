@@ -4,7 +4,7 @@ import { SharedElementCallback, useTransition } from './use-transition';
 
 interface RenderPropsChildren {
   /**
-   * @param extraStyle
+   * @param style
    * inline styles to render a DOM element with. Typically contains opacity / transform / transition
    *
    * @param transitionPhase
@@ -17,7 +17,7 @@ interface RenderPropsChildren {
    * If the desired shared element is not return value of children, manually pass to desired element.
    */
   (
-    extraStyle: undefined | React.CSSProperties,
+    style: undefined | React.CSSProperties,
     callbacks: SharedElementCallback,
     transitionPhase: TransitionPhase,
     ref?: React.MutableRefObject<any>,
@@ -61,7 +61,7 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
      * when children is a function with arity >= 4:
      * it's a render function that handles ref by itself
      */
-    return children(effectiveChildProps.styles, callbacks, effectiveChildProps.phase, ref) as React.ReactElement;
+    return children(effectiveChildProps.style, callbacks, effectiveChildProps.phase, ref) as React.ReactElement;
   }
 
   if (typeof children === 'function') {
@@ -69,14 +69,14 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId,
      * when children is a function with arity <= 3:
      * assume it returns a React (DOM) Element, and inject our ref
      */
-    const origElem = children(effectiveChildProps.styles, callbacks, effectiveChildProps.phase);
+    const origElem = children(effectiveChildProps.style, callbacks, effectiveChildProps.phase);
     return origElem && cloneElement(origElem, { ref });
   }
 
   if (children && typeof (children as React.ReactElement).type === 'string') {
     return cloneElement(children as React.ReactElement, {
       ref,
-      style: effectiveChildProps.styles,
+      style: effectiveChildProps.style,
     }) as React.ReactElement;
   }
 

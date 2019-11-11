@@ -10,7 +10,7 @@ interface TransitionConfig {
 
 interface ChildProps {
   phase: TransitionPhase;
-  styles?: React.CSSProperties;
+  style?: React.CSSProperties;
 }
 
 export interface SharedElementCallback {
@@ -25,7 +25,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
   const initialChildProps = useMemo<ChildProps>(
     () => ({
       phase: TransitionPhase.initialRender,
-      styles: isTarget
+      style: isTarget
         ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
         : undefined,
     }),
@@ -52,7 +52,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
     const elem = ref.current;
     callbacks.takeSnapshot();
 
-    if (isTarget && logicalId && instanceId && initialChildProps.styles && elem instanceof HTMLElement) {
+    if (isTarget && logicalId && instanceId && initialChildProps.style && elem instanceof HTMLElement) {
       const invertedTransform = delegate.createStyle(
         TransitionPhase.beforeTransition,
         logicalId,
@@ -61,8 +61,8 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
         transition,
       );
 
-      setChildProps({ phase: TransitionPhase.beforeTransition, styles: invertedTransform || undefined });
-      // do not start transition if invertedTransform is falsy (and we just unset the styles)
+      setChildProps({ phase: TransitionPhase.beforeTransition, style: invertedTransform || undefined });
+      // do not start transition if invertedTransform is falsy (and we just unset the style)
       if (!invertedTransform) return;
 
       /**
@@ -77,7 +77,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
 
         setChildProps({
           phase: TransitionPhase.duringTransition,
-          styles: delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition),
+          style: delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition),
         });
 
         const tidyUp = () => {
@@ -86,7 +86,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
 
           setChildProps({
             phase: TransitionPhase.afterTransition,
-            styles: delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition),
+            style: delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition),
           });
         };
 
