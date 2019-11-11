@@ -1,11 +1,6 @@
-import React, { cloneElement, useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { SpringfieldContext, TransitionPhase } from './delegate';
-import { defaultSpringfieldDelegate } from './default-delegate';
-
-interface SharedElementCallback {
-  takeSnapshot: () => void;
-  removeSnapshot: () => void;
-}
+import React, { cloneElement } from 'react';
+import { TransitionPhase } from './delegate';
+import { SharedElementCallback, useTransition } from './use-transition';
 
 interface RenderPropsChildren {
   /**
@@ -59,97 +54,8 @@ interface SharedElemProps {
   isTarget?: boolean;
 }
 
-interface ChildProps {
-  phase: TransitionPhase;
-  styles?: React.CSSProperties;
-}
-
 export const SharedElement: React.FC<SharedElemProps> = ({ children, instanceId, isTarget, logicalId, transition }) => {
-  const ref = useRef<HTMLElement>(null!);
-  const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
-
-  const initialChildProps = useMemo<ChildProps>(
-    () => ({
-      phase: TransitionPhase.initialRender,
-      styles: isTarget
-        ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
-        : undefined,
-    }),
-    [logicalId, instanceId, isTarget, delegate, transition],
-  );
-
-  const [childProps, setChildProps] = useState<null | ChildProps>(null);
-
-  const callbacks: SharedElementCallback = useMemo(
-    () => ({
-      takeSnapshot() {
-        if (ref.current instanceof HTMLElement && logicalId && instanceId)
-          delegate.takeSnapshot(logicalId, instanceId, ref.current);
-      },
-      removeSnapshot() {
-        if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
-      },
-    }),
-    [logicalId, instanceId, delegate],
-  );
-
-  useLayoutEffect(() => {
-    let effecting = true;
-    const elem = ref.current;
-    callbacks.takeSnapshot();
-
-    if (isTarget && logicalId && instanceId && initialChildProps.styles && elem instanceof HTMLElement) {
-      const invertedTransform = delegate.createStyle(
-        TransitionPhase.beforeTransition,
-        logicalId,
-        instanceId,
-        elem,
-        transition,
-      );
-
-      setChildProps({ phase: TransitionPhase.beforeTransition, styles: invertedTransform || undefined });
-      // do not start transition if invertedTransform is falsy (and we just unset the styles)
-      if (!invertedTransform) return;
-
-      /**
-       * requestAnimationFrame does not really ensure `invertedTransform` style is set to DOM
-       * If this becomes a problem, consider https://www.robinwieruch.de/react-usestate-callback
-       */
-      requestAnimationFrame(() => {
-        if (!(effecting && ref.current === elem)) return /* due to out of control */;
-
-        // force invertedTransform to be layouted
-        elem.getBoundingClientRect();
-
-        setChildProps({
-          phase: TransitionPhase.duringTransition,
-          styles: delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition),
-        });
-
-        const tidyUp = () => {
-          elem.removeEventListener('transitionend', tidyUp);
-          if (!(effecting && ref.current === elem)) return /* due to out of control */;
-
-          setChildProps({
-            phase: TransitionPhase.afterTransition,
-            styles: delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition),
-          });
-        };
-
-        elem.addEventListener('transitionend', tidyUp);
-      });
-    } else {
-      setChildProps(null);
-    }
-
-    return () => {
-      // TODO: should remove snapshot
-      effecting = false;
-    };
-  }, [logicalId, instanceId, isTarget, transition, delegate /* NO callbacks / initialChildProps */]);
-
-  const effectiveChildProps = childProps || initialChildProps;
-
+  const [effectiveChildProps, callbacks, ref] = useTransition(logicalId, instanceId, { isTarget, transition });
   if (typeof children === 'function' && children.length > 3) {
     /**
      * when children is a function with arity >= 4:
