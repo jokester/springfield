@@ -1,12 +1,9 @@
 import React from 'react';
 import { TransitionPhase } from './delegate';
-interface SharedElementCallback {
-    takeSnapshot: () => void;
-    removeSnapshot: () => void;
-}
+import { SharedElementCallback } from './use-transition';
 interface RenderPropsChildren {
     /**
-     * @param extraStyle
+     * @param style
      * inline styles to render a DOM element with. Typically contains opacity / transform / transition
      *
      * @param transitionPhase
@@ -18,7 +15,7 @@ interface RenderPropsChildren {
      * @param ref
      * If the desired shared element is not return value of children, manually pass to desired element.
      */
-    (extraStyle: undefined | React.CSSProperties, callbacks: SharedElementCallback, transitionPhase: TransitionPhase, ref?: React.MutableRefObject<any>): React.ReactElement;
+    (style: undefined | React.CSSProperties, callbacks: SharedElementCallback, transitionPhase: TransitionPhase, ref?: React.MutableRefObject<any>): React.ReactElement;
 }
 interface SharedElemProps {
     children: React.ReactElement | RenderPropsChildren;
