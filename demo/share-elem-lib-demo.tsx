@@ -22,7 +22,7 @@ const ButtonsBar: React.FC<{ currentTab: number; setCurrentTab(t: number): void 
       </SharedElement>
 
       {/* when children is a React.Element for DOM element, SharedElement overrides its ref/style properties */}
-      <SharedElement logicalId="tab2" instanceId="btn" isTarget={currentTab !== 2}>
+      <SharedElement logicalId="tab2" instanceId="btn" transition="3s all ease-out" isTarget={currentTab !== 2} initialOpacity={0}>
         <button className={styles.button} onClick={() => setCurrentTab(2)}>
           tab2
         </button>

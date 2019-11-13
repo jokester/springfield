@@ -7,21 +7,19 @@ function centerOf(pos: PositionSnapshot) {
 /**
  * @param last
  * @param first
- * @returns inline style that make 'last' appear at position of 'first'
+ * @returns CSS `transform` property that makes 'last' appear at position of 'first'
  */
-export function computeInvertedPositionalTransition(
+export function computeInvertedPositionalTransform(
   last: PositionSnapshot,
   first: PositionSnapshot,
 ): /* React.CSSProperties */ {} {
   const centerFirst = centerOf(first);
   const centerLast = centerOf(last);
 
-  return {
-    transform: [
-      `translateX(${centerFirst.x - centerLast.x}px)`,
-      `translateY(${centerFirst.y - centerLast.y}px)`,
-      `scaleX(${first.width / last.width})`,
-      `scaleY(${first.height / last.height})`,
-    ].join(' '),
-  };
+  return [
+    `translateX(${centerFirst.x - centerLast.x}px)`,
+    `translateY(${centerFirst.y - centerLast.y}px)`,
+    `scaleX(${first.width / last.width})`,
+    `scaleY(${first.height / last.height})`,
+  ].join(' ');
 }

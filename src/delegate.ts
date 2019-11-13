@@ -39,25 +39,28 @@ export enum TransitionPhase {
   afterTransition = 'afterTransition',
 }
 
+export interface TransitionConfig {
+  logicalId: string;
+  instanceId: string;
+  isTarget?: boolean;
+  transition?: string;
+  initialOpacity?: number;
+}
+
 export interface SpringfieldDelegate {
-  takeSnapshot(logicalId: string, instanceId: string, elem: HTMLElement): void;
-  removeSnapshot(logicalId: string, instanceId: string): void;
+  takeSnapshot(conf: TransitionConfig, elem: HTMLElement): void;
+  removeSnapshot(conf: TransitionConfig): void;
 
   /**
-   *
    * @param phase
-   * @param logicalId
-   * @param instanceId
+   * @param conf
    * @param elem
-   * @param transition property specified in {@ref SharedElement}
    * @return inline style to render DOM element with
    */
   createStyle(
     phase: TransitionPhase,
-    logicalId: string,
-    instanceId: string,
+    conf: TransitionConfig,
     elem: undefined | HTMLElement,
-    transition?: string,
   ): undefined | /* React.CSSProperties */ {};
 }
 
