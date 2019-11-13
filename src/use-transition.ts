@@ -1,12 +1,6 @@
 import React, { useContext, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { SpringfieldContext, TransitionPhase } from './delegate';
+import { SpringfieldContext, TransitionConfig, TransitionPhase } from './delegate';
 import { defaultSpringfieldDelegate } from './default-delegate';
-
-interface TransitionConfig {
-  isTarget?: boolean;
-  transition?: string;
-  initialOpacity?: number;
-}
 
 interface ChildProps {
   phase: TransitionPhase;
@@ -14,22 +8,20 @@ interface ChildProps {
 }
 
 export interface SharedElementCallback {
-  takeSnapshot: () => void;
-  removeSnapshot: () => void;
+  takeSnapshot(): void;
+  removeSnapshot(): void;
 }
 
-export function useTransition(logicalId: string, instanceId: string, conf: TransitionConfig) {
+export function useTransition(conf: TransitionConfig) {
   const ref = useRef<HTMLElement>(null!);
-  const { isTarget, transition, initialOpacity } = conf;
   const delegate = useContext(SpringfieldContext) || defaultSpringfieldDelegate;
+
   const initialChildProps = useMemo<ChildProps>(
     () => ({
       phase: TransitionPhase.initialRender,
-      style: isTarget
-        ? delegate.createStyle(TransitionPhase.initialRender, logicalId, instanceId, undefined, transition)
-        : undefined,
+      style: conf.isTarget ? delegate.createStyle(TransitionPhase.initialRender, conf, undefined) : undefined,
     }),
-    [logicalId, instanceId, isTarget, delegate, transition],
+    [conf.logicalId, conf.instanceId, conf.isTarget, delegate],
   );
 
   const [childProps, setChildProps] = useState<null | ChildProps>(null);
@@ -37,14 +29,17 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
   const callbacks: SharedElementCallback = useMemo(
     () => ({
       takeSnapshot() {
-        if (ref.current instanceof HTMLElement && logicalId && instanceId)
-          delegate.takeSnapshot(logicalId, instanceId, ref.current);
+        if (ref.current instanceof HTMLElement && conf.logicalId && conf.instanceId) {
+          delegate.takeSnapshot(conf, ref.current);
+        }
       },
       removeSnapshot() {
-        if (logicalId && instanceId) delegate.removeSnapshot(logicalId, instanceId);
+        if (conf.logicalId && conf.instanceId) {
+          delegate.removeSnapshot(conf);
+        }
       },
     }),
-    [logicalId, instanceId, delegate],
+    [conf.logicalId, conf.instanceId, delegate],
   );
 
   useLayoutEffect(() => {
@@ -52,14 +47,8 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
     const elem = ref.current;
     callbacks.takeSnapshot();
 
-    if (isTarget && logicalId && instanceId && initialChildProps.style && elem instanceof HTMLElement) {
-      const invertedTransform = delegate.createStyle(
-        TransitionPhase.beforeTransition,
-        logicalId,
-        instanceId,
-        elem,
-        transition,
-      );
+    if (conf.isTarget && conf.logicalId && conf.instanceId && initialChildProps.style && elem instanceof HTMLElement) {
+      const invertedTransform = delegate.createStyle(TransitionPhase.beforeTransition, conf, elem);
 
       setChildProps({ phase: TransitionPhase.beforeTransition, style: invertedTransform || undefined });
       // do not start transition if invertedTransform is falsy (and we just unset the style)
@@ -77,7 +66,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
 
         setChildProps({
           phase: TransitionPhase.duringTransition,
-          style: delegate.createStyle(TransitionPhase.duringTransition, logicalId, instanceId, elem, transition),
+          style: delegate.createStyle(TransitionPhase.duringTransition, conf, elem),
         });
 
         const tidyUp = () => {
@@ -86,7 +75,7 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
 
           setChildProps({
             phase: TransitionPhase.afterTransition,
-            style: delegate.createStyle(TransitionPhase.afterTransition, logicalId, instanceId, elem, transition),
+            style: delegate.createStyle(TransitionPhase.afterTransition, conf, elem),
           });
         };
 
@@ -100,7 +89,11 @@ export function useTransition(logicalId: string, instanceId: string, conf: Trans
       // TODO: should remove snapshot
       effecting = false;
     };
-  }, [logicalId, instanceId, isTarget, transition, delegate /* NO callbacks / initialChildProps */]);
+  }, [conf.logicalId, conf.instanceId, conf.isTarget, delegate /* NO callbacks / initialChildProps */]);
 
-  return [/* effective child props */ childProps || initialChildProps, callbacks, ref] as const;
+  return [
+    childProps || initialChildProps, // as 'effective' child props
+    callbacks,
+    ref,
+  ] as const;
 }
