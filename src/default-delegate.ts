@@ -5,7 +5,7 @@ import {
   removePositionalSnapshot,
   takePositionalSnapshot,
 } from './positional/positional-snapshots';
-import { SpringfieldDelegate, TransitionPhase } from './delegate';
+import { SpringfieldDelegate, TransitionConfig, TransitionPhase } from './delegate';
 import { computeInvertedPositionalTransition } from './positional/positional-transition';
 
 const globalSnapshotStorage: PositionalSnapshotStorage = new Map();
@@ -14,20 +14,18 @@ const globalSnapshotStorage: PositionalSnapshotStorage = new Map();
  * A global singleton
  */
 export const defaultSpringfieldDelegate: SpringfieldDelegate = {
-  takeSnapshot(logicalId: string, instanceId: string, elem: HTMLElement) {
-    return takePositionalSnapshot(globalSnapshotStorage, logicalId, instanceId, elem);
+  takeSnapshot(conf: TransitionConfig, elem: HTMLElement) {
+    return takePositionalSnapshot(globalSnapshotStorage, conf.logicalId, conf.instanceId, elem);
   },
 
-  removeSnapshot(logicalId: string, instanceId: string): void {
-    return removePositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
+  removeSnapshot(conf: TransitionConfig): void {
+    return removePositionalSnapshot(globalSnapshotStorage, conf.logicalId, conf.instanceId);
   },
 
   createStyle(
     phase: TransitionPhase,
-    logicalId: string,
-    instanceId: string,
+    { logicalId, instanceId, transition = 'all 0.3s ease-in' }: TransitionConfig,
     elem: undefined | HTMLElement,
-    transition = 'all 0.3s ease-in',
   ): undefined | {} {
     if (/* SSR */ typeof window === 'undefined') {
       return undefined;
