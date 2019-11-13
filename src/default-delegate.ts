@@ -6,7 +6,7 @@ import {
   takePositionalSnapshot,
 } from './positional/positional-snapshots';
 import { SpringfieldDelegate, TransitionConfig, TransitionPhase } from './delegate';
-import { computeInvertedPositionalTransition } from './positional/positional-transition';
+import { computeInvertedPositionalTransform } from './positional/positional-transition';
 
 const globalSnapshotStorage: PositionalSnapshotStorage = new Map();
 
@@ -24,7 +24,7 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
 
   createStyle(
     phase: TransitionPhase,
-    { logicalId, instanceId, transition = 'all 0.3s ease-in' }: TransitionConfig,
+    { logicalId, instanceId, transition = 'all 0.3s ease-in', initialOpacity }: TransitionConfig,
     elem: undefined | HTMLElement,
   ): undefined | {} {
     if (/* SSR */ typeof window === 'undefined') {
@@ -35,7 +35,10 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
       const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
       if (lastSnapshot) {
         const current = createPositionSnapshot(elem);
-        return computeInvertedPositionalTransition(current, lastSnapshot);
+        return {
+          transform: computeInvertedPositionalTransform(current, lastSnapshot),
+          opacity: initialOpacity,
+        };
       }
     } else if (phase === TransitionPhase.duringTransition) {
       return { transition };
