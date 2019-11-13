@@ -30,17 +30,22 @@ interface SharedElemProps {
      */
     instanceId: string;
     /**
-     * transition spec when corresponded DOM element is mounted
+     * whether child is target of shared-element transition
+     * @default false
+     * (all SharedElement-rendered direct children are source of transitions)
+     */
+    isTarget?: boolean;
+    /**
+     * transition spec for {@code TransitionPhase.duringTransition}
      * @default '0.3s all ease-in'
      * @see https://developer.mozilla.org/en-US/docs/Web/CSS/transition
      */
     transition?: string;
     /**
-     * whether child can be target of shared-element transition
-     * @default false
-     * (all SharedElement-rendered children are source of transitions)
+     * `opacity` style for phase {@code TransitionPhase.beforeTransition}
+     * @default 1
      */
-    isTarget?: boolean;
+    initialOpacity?: number;
 }
 export declare const SharedElement: React.FC<SharedElemProps>;
 export {};

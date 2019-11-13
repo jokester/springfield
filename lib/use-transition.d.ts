@@ -1,17 +1,12 @@
 import React from 'react';
-import { TransitionPhase } from './delegate';
-interface TransitionConfig {
-    isTarget?: boolean;
-    transition?: string;
-    initialOpacity?: number;
-}
+import { TransitionConfig, TransitionPhase } from './delegate';
 interface ChildProps {
     phase: TransitionPhase;
     style?: React.CSSProperties;
 }
 export interface SharedElementCallback {
-    takeSnapshot: () => void;
-    removeSnapshot: () => void;
+    takeSnapshot(): void;
+    removeSnapshot(): void;
 }
-export declare function useTransition(logicalId: string, instanceId: string, conf: TransitionConfig): readonly [ChildProps, SharedElementCallback, React.MutableRefObject<HTMLElement>];
+export declare function useTransition(conf: TransitionConfig): readonly [ChildProps, SharedElementCallback, React.MutableRefObject<HTMLElement>];
 export {};
