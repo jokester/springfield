@@ -1,4 +1,4 @@
-import React, { cloneElement } from 'react';
+import { cloneElement } from 'react';
 import { TransitionPhase } from './delegate';
 import { SharedElementCallback, useTransition } from './use-transition';
 
@@ -62,6 +62,7 @@ interface SharedElemProps {
 
 export const SharedElement: React.FC<SharedElemProps> = ({ children, ...conf }) => {
   const [effectiveChildProps, callbacks, ref] = useTransition(conf);
+
   if (typeof children === 'function' && children.length > 3) {
     /**
      * when children is a function with arity >= 4:
