@@ -36,7 +36,7 @@
     "lib",
     "src"
   ],
-  "peerDependicies": {
+  "peerDependencies": {
     "react": ">=16.8"
   },
   "devDependencies": {
