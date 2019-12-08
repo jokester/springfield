@@ -35,7 +35,8 @@
     "jest.config.js",
     "dev",
     "webpack",
-    "jest"
+    "jest",
+    "src/ts-commonutil"
   ],
   "include": [
     "src"
