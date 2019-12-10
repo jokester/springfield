@@ -1,4 +1,4 @@
-import React, { cloneElement } from 'react';
+import { cloneElement, CSSProperties, ReactElement, FunctionComponent, MutableRefObject } from 'react';
 import { TransitionPhase } from './delegate';
 import { SharedElementCallback, useTransition } from './use-transition';
 
@@ -8,24 +8,26 @@ interface RenderPropsChildren {
    * inline styles to render a DOM element with. Typically contains opacity / transform / transition
    *
    * @param transitionPhase
+   * current transition phase
    *
    * @param callbacks
+   * an Object with the following methods:
    * takeSnapshot: a callback to take snapshot manually. e.g. in scroll/click event handler
    * removeSnapshot: a callback to remove snapshot manually. e.g. when the element is no longer appropriate a transition source
    *
    * @param ref
-   * If the desired shared element is not return value of children, manually pass to desired element.
+   * If the desired shared element is not the return value of children, manually pass this `ref` to desired element.
    */
   (
-    style: undefined | React.CSSProperties,
+    style: undefined | CSSProperties,
     callbacks: SharedElementCallback,
     transitionPhase: TransitionPhase,
-    ref?: React.MutableRefObject<any>,
-  ): React.ReactElement;
+    ref?: MutableRefObject<any>,
+  ): ReactElement;
 }
 
 interface SharedElemProps {
-  children: React.ReactElement | RenderPropsChildren;
+  children: ReactElement | RenderPropsChildren;
 
   /**
    * identifier of a logical element
@@ -60,14 +62,15 @@ interface SharedElemProps {
   initialOpacity?: number;
 }
 
-export const SharedElement: React.FC<SharedElemProps> = ({ children, ...conf }) => {
+export const SharedElement: FunctionComponent<SharedElemProps> = ({ children, ...conf }) => {
   const [effectiveChildProps, callbacks, ref] = useTransition(conf);
+
   if (typeof children === 'function' && children.length > 3) {
     /**
      * when children is a function with arity >= 4:
      * it's a render function that handles ref by itself
      */
-    return children(effectiveChildProps.style, callbacks, effectiveChildProps.phase, ref) as React.ReactElement;
+    return children(effectiveChildProps.style, callbacks, effectiveChildProps.phase, ref) as ReactElement;
   }
 
   if (typeof children === 'function') {
@@ -79,12 +82,12 @@ export const SharedElement: React.FC<SharedElemProps> = ({ children, ...conf }) 
     return origElem && cloneElement(origElem, { ref });
   }
 
-  if (children && typeof (children as React.ReactElement).type === 'string') {
-    return cloneElement(children as React.ReactElement, {
+  if (children && typeof (children as ReactElement).type === 'string') {
+    return cloneElement(children as ReactElement, {
       ref,
       style: effectiveChildProps.style,
-    }) as React.ReactElement;
+    }) as ReactElement;
   }
 
-  return children as React.ReactElement;
+  return children as ReactElement;
 };

@@ -1,6 +1,6 @@
 {
   "name": "springfield",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": "Wang Guan <momocraft@gmail.com>",
   "private": false,
   "license": "MIT",
@@ -36,7 +36,7 @@
     "lib",
     "src"
   ],
-  "peerDependicies": {
+  "peerDependencies": {
     "react": ">=16.8"
   },
   "devDependencies": {

@@ -1,12 +1,14 @@
 export type PositionSnapshot = (ClientRect | DOMRect) & {
+  instanceId: string;
   timestamp: number;
 };
 
-export function createPositionSnapshot(elem: HTMLElement): PositionSnapshot {
+export function createPositionSnapshot(elem: HTMLElement, instanceId: string): PositionSnapshot {
   const timestamp = Date.now();
   const { left, right, top, bottom } = elem.getBoundingClientRect();
   return {
     timestamp,
+    instanceId,
     left,
     right,
     top,
@@ -18,8 +20,10 @@ export function createPositionSnapshot(elem: HTMLElement): PositionSnapshot {
 
 export declare type PositionalSnapshotStorage = Map<
   /* logicalId */ string,
-  Map</* instanceId */ string, PositionSnapshot>
+  /* a timestamp-desc array of <= 2 elements */ PositionSnapshot[]
 >;
+
+let inner;
 
 export function takePositionalSnapshot(
   storage: PositionalSnapshotStorage,
@@ -27,14 +31,14 @@ export function takePositionalSnapshot(
   instanceId: string,
   elem: HTMLElement,
 ): void {
-  const x = createPositionSnapshot(elem);
+  const x = createPositionSnapshot(elem, instanceId);
   if (!(x.width && x.height)) return;
 
-  const innerMap = storage.get(logicalId);
-  if (innerMap) {
-    innerMap.set(instanceId, x);
+  if ((inner = storage.get(logicalId))) {
+    inner.unshift(x);
+    if (inner.length > 2) inner.length = 2;
   } else {
-    storage.set(logicalId, new Map([[instanceId, x]]));
+    storage.set(logicalId, [x]);
   }
 }
 
@@ -43,10 +47,11 @@ export function findPositionalSnapshot(
   logicalId: string,
   instanceId: string,
 ): null | PositionSnapshot {
-  let inner;
   if ((inner = storage.get(logicalId))) {
-    for (const [pId, snapshot] of inner.entries()) {
-      if (pId !== instanceId && snapshot) return snapshot;
+    for (let i = 0; i < inner.length; i++) {
+      if (inner[i].instanceId !== instanceId) {
+        return inner[i];
+      }
     }
   }
   return null;
@@ -57,11 +62,13 @@ export function removePositionalSnapshot(
   logicalId: string,
   instanceId: string,
 ): void {
-  let inner;
   if ((inner = storage.get(logicalId))) {
-    inner.delete(instanceId);
-    if (!inner.size) {
-      storage.delete(logicalId);
+    for (let i = 0; i < inner.length; i++) {
+      if (inner[i].instanceId === instanceId) {
+        inner.splice(i, 1);
+        if (!inner.length) storage.delete(logicalId);
+        break;
+      }
     }
   }
 }
