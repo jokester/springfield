@@ -1,4 +1,4 @@
-import React from 'react';
+import { CSSProperties, ReactElement, FunctionComponent, MutableRefObject } from 'react';
 import { TransitionPhase } from './delegate';
 import { SharedElementCallback } from './use-transition';
 interface RenderPropsChildren {
@@ -7,18 +7,20 @@ interface RenderPropsChildren {
      * inline styles to render a DOM element with. Typically contains opacity / transform / transition
      *
      * @param transitionPhase
+     * current transition phase
      *
      * @param callbacks
+     * an Object with the following methods:
      * takeSnapshot: a callback to take snapshot manually. e.g. in scroll/click event handler
      * removeSnapshot: a callback to remove snapshot manually. e.g. when the element is no longer appropriate a transition source
      *
      * @param ref
-     * If the desired shared element is not return value of children, manually pass to desired element.
+     * If the desired shared element is not the return value of children, manually pass this `ref` to desired element.
      */
-    (style: undefined | React.CSSProperties, callbacks: SharedElementCallback, transitionPhase: TransitionPhase, ref?: React.MutableRefObject<any>): React.ReactElement;
+    (style: undefined | CSSProperties, callbacks: SharedElementCallback, transitionPhase: TransitionPhase, ref?: MutableRefObject<any>): ReactElement;
 }
 interface SharedElemProps {
-    children: React.ReactElement | RenderPropsChildren;
+    children: ReactElement | RenderPropsChildren;
     /**
      * identifier of a logical element
      * @example "user-avatar"
@@ -47,5 +49,5 @@ interface SharedElemProps {
      */
     initialOpacity?: number;
 }
-export declare const SharedElement: React.FC<SharedElemProps>;
+export declare const SharedElement: FunctionComponent<SharedElemProps>;
 export {};
