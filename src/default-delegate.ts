@@ -34,7 +34,7 @@ export const defaultSpringfieldDelegate: SpringfieldDelegate = {
     } else if (phase === TransitionPhase.beforeTransition && elem) {
       const lastSnapshot = findPositionalSnapshot(globalSnapshotStorage, logicalId, instanceId);
       if (lastSnapshot) {
-        const current = createPositionSnapshot(elem);
+        const current = createPositionSnapshot(elem, logicalId);
         return {
           transform: computeInvertedPositionalTransform(current, lastSnapshot),
           opacity: initialOpacity,

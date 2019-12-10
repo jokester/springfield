@@ -42,54 +42,64 @@ export function useTransition(conf: TransitionConfig) {
     [conf.logicalId, conf.instanceId, delegate],
   );
 
-  useLayoutEffect(() => {
-    let effecting = true;
-    const elem = ref.current;
-    callbacks.takeSnapshot();
+  if (typeof window !== 'undefined') {
+    /**
+     * only useLayoutEffect() in SSR, to get rid of warning
+     */
+    useLayoutEffect(() => {
+      let effecting = true;
+      const elem = ref.current;
+      callbacks.takeSnapshot();
 
-    if (conf.isTarget && conf.logicalId && conf.instanceId && initialChildProps.style && elem instanceof HTMLElement) {
-      const invertedTransform = delegate.createStyle(TransitionPhase.beforeTransition, conf, elem);
+      if (
+        conf.isTarget &&
+        conf.logicalId &&
+        conf.instanceId &&
+        initialChildProps.style &&
+        elem instanceof HTMLElement
+      ) {
+        const invertedTransform = delegate.createStyle(TransitionPhase.beforeTransition, conf, elem);
 
-      setChildProps({ phase: TransitionPhase.beforeTransition, style: invertedTransform || undefined });
-      // do not start transition if invertedTransform is falsy (and we just unset the style)
-      if (!invertedTransform) return;
+        setChildProps({ phase: TransitionPhase.beforeTransition, style: invertedTransform || undefined });
+        // do not start transition if invertedTransform is falsy (and we just unset the style)
+        if (!invertedTransform) return;
 
-      /**
-       * requestAnimationFrame does not really ensure `invertedTransform` style is set to DOM
-       * If this becomes a problem, consider https://www.robinwieruch.de/react-usestate-callback
-       */
-      requestAnimationFrame(() => {
-        if (!(effecting && ref.current === elem)) return /* due to out of control */;
-
-        // force invertedTransform to be layouted
-        elem.getBoundingClientRect();
-
-        setChildProps({
-          phase: TransitionPhase.duringTransition,
-          style: delegate.createStyle(TransitionPhase.duringTransition, conf, elem),
-        });
-
-        const tidyUp = () => {
-          elem.removeEventListener('transitionend', tidyUp);
+        /**
+         * requestAnimationFrame does not really ensure `invertedTransform` style is set to DOM
+         * If this becomes a problem, consider https://www.robinwieruch.de/react-usestate-callback
+         */
+        requestAnimationFrame(() => {
           if (!(effecting && ref.current === elem)) return /* due to out of control */;
 
+          // force invertedTransform to be layouted
+          elem.getBoundingClientRect();
+
           setChildProps({
-            phase: TransitionPhase.afterTransition,
-            style: delegate.createStyle(TransitionPhase.afterTransition, conf, elem),
+            phase: TransitionPhase.duringTransition,
+            style: delegate.createStyle(TransitionPhase.duringTransition, conf, elem),
           });
-        };
 
-        elem.addEventListener('transitionend', tidyUp);
-      });
-    } else {
-      setChildProps(null);
-    }
+          const tidyUp = () => {
+            elem.removeEventListener('transitionend', tidyUp);
+            if (!(effecting && ref.current === elem)) return /* due to out of control */;
 
-    return () => {
-      // TODO: should remove snapshot
-      effecting = false;
-    };
-  }, [conf.logicalId, conf.instanceId, conf.isTarget, delegate /* NO callbacks / initialChildProps */]);
+            setChildProps({
+              phase: TransitionPhase.afterTransition,
+              style: delegate.createStyle(TransitionPhase.afterTransition, conf, elem),
+            });
+          };
+
+          elem.addEventListener('transitionend', tidyUp);
+        });
+      } else {
+        setChildProps(null);
+      }
+
+      return () => {
+        effecting = false;
+      };
+    }, [conf.logicalId, conf.instanceId, conf.isTarget, delegate /* NO callbacks / initialChildProps */]);
+  }
 
   return [
     childProps || initialChildProps, // as 'effective' child props

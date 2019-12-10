@@ -4,7 +4,7 @@
  * - what elements to apply transition
  * - what transition / transform to apply
  */
-import * as React from 'react';
+import { createContext } from 'react';
 
 /**
  * @see https://aerotwist.com/blog/flip-your-animations/ for explanations of "first" "last" "inverted"
@@ -64,4 +64,4 @@ export interface SpringfieldDelegate {
   ): undefined | /* React.CSSProperties */ {};
 }
 
-export const SpringfieldContext = React.createContext<null | SpringfieldDelegate>(null);
+export const SpringfieldContext = createContext<null | SpringfieldDelegate>(null);
