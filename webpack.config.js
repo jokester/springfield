@@ -10,7 +10,7 @@ module.exports = function(env, argv) {
       path: path.join(__dirname, 'docs', 'demo'),
       filename: '[name].[chunkhash:8].js',
     },
-    devtool: 'source-map',
+    devtool: argv.mode === 'development' && 'source-map',
     target: 'web',
     externals: {
       react: 'React',
