@@ -1,13 +1,13 @@
 import React from 'react';
 import { linkTo } from '@storybook/addon-links';
-import { ShareElemLibPlayground } from '../demo/share-elem-lib-demo';
 import './external.css';
+import { TabSwitchExample } from "../demo/tab-switch-example";
 
 export default {
   title: 'Welcome',
 };
 
-export const toStorybook = () => <ShareElemLibPlayground />;
+export const toStorybook = () => <TabSwitchExample />;
 
 toStorybook.story = {
   name: 'to Storybook',

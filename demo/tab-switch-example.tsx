@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { SharedElement } from '../src/shared-elem';
-
-const styles = {
-  button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
-  verticalContainer: `flex p-4 justify-around`,
-
-  mainContent: 'h-64 bg-gray-100 m-2',
-  expandedRegion: 'w-48 h-36 border-solid border inline-block bg-gray-200 mx-4 text-xs whitespace-pre-line',
-} as const;
+import { SharedElement } from '../src';
 
 const ButtonsBar: React.FC<{ currentTab: number; setCurrentTab(t: number): void }> = ({
   setCurrentTab,
   currentTab,
 }) => {
+  const styles = {
+    button: `p-2 inline-block border border-solid shadow-outline focus:outline-0`,
+    verticalContainer: `flex p-4 justify-around`,
+
+    mainContent: 'h-64 bg-gray-100 m-2',
+    expandedRegion: 'w-48 h-36 border-solid border inline-block bg-gray-200 mx-4 text-xs whitespace-pre-line',
+  } as const;
+
   return (
     <p className={styles.verticalContainer}>
       <SharedElement logicalId="tab1" instanceId="btn" isTarget={currentTab !== 1}>
@@ -43,29 +43,22 @@ const ButtonsBar: React.FC<{ currentTab: number; setCurrentTab(t: number): void 
   );
 };
 
-export const ShareElemLibPlayground: React.FC = props => {
+export const TabSwitchExample: React.FC = props => {
   const [currentTab, setCurrentTab] = useState(1);
-  return (
-    <div>
-      <p className="p-2">
-        Springfield - Demo
-        <a href="https://github.com/jokester/springfield" className="mx-2 underline text-blue-400">
-          homepage
-        </a>
-        <a
-          href="https://github.com/jokester/springfield/blob/develop/demo/share-elem-lib-demo.tsx"
-          className="mx-2 underline text-blue-400"
-        >
-          src
-        </a>
-      </p>
+  const styles = {
+    mainContent: 'h-64 bg-gray-100 m-2',
+    mainContentHeight: 'h-64 m-2',
+  } as const;
 
+  return (
+    <div className="p-4">
+      <h1 className="text-2xl">tab switch example</h1>
       <ButtonsBar currentTab={currentTab} setCurrentTab={setCurrentTab} />
 
       <p className="p-2">currentTab={currentTab}</p>
 
-      {/* when children is a function, SharedElements passes style/ref/callbacks  to to it, and return its return value  */}
-      {currentTab === 2 && (
+      {/* when children is a function, SharedElements passes style/ref/callbacks to to it, and return its return value  */}
+      {currentTab === 2 ? (
         <SharedElement logicalId="tab2" instanceId="main" isTarget>
           {(style, callbacks, phase, ref) => (
             <div
@@ -81,6 +74,8 @@ export const ShareElemLibPlayground: React.FC = props => {
             </div>
           )}
         </SharedElement>
+      ) : (
+        <div className={styles.mainContentHeight} />
       )}
     </div>
   );

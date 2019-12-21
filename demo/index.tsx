@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { ShareElemLibPlayground } from './share-elem-lib-demo';
+import { SpringFieldIntro } from './springfield-intro';
+import { ListDetailExample } from './list-detail-example';
+import { TabSwitchExample } from './tab-switch-example';
 
 function registerHMR() {
   type ModuleHMR = typeof module & {
@@ -18,7 +20,11 @@ function registerHMR() {
 function render() {
   ReactDOM.render(
     <>
-      <ShareElemLibPlayground />
+      <SpringFieldIntro />
+      <hr />
+      <ListDetailExample />
+      <hr />
+      <TabSwitchExample />
     </>,
     document.getElementById('root') as HTMLElement,
   );
