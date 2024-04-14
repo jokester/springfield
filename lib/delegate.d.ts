@@ -1,10 +1,4 @@
-/**
- * @file delegate.ts
- * extension point of this library
- * - what elements to apply transition
- * - what transition / transform to apply
- */
-import * as React from 'react';
+/// <reference types="react" />
 /**
  * @see https://aerotwist.com/blog/flip-your-animations/ for explanations of "first" "last" "inverted"
  */
@@ -52,4 +46,4 @@ export interface SpringfieldDelegate {
      */
     createStyle(phase: TransitionPhase, conf: TransitionConfig, elem: undefined | HTMLElement): undefined | /* React.CSSProperties */ {};
 }
-export declare const SpringfieldContext: React.Context<SpringfieldDelegate | null>;
+export declare const SpringfieldContext: import("react").Context<SpringfieldDelegate | null>;
